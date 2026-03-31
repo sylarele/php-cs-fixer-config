@@ -1,6 +1,7 @@
 {
     "name": "sylarele/php-cs-fixer-config",
     "description": "Our internal PHP CS Fixer config",
+    "keywords": ["CS", "CodingStyle"],
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -8,15 +9,16 @@
             "Sylarele\\PhpCsFixerConfig\\": "src/"
         }
     },
-    "authors": [
-        {
-            "name": "Raisenku",
-            "email": "raisenku@prysmy.com"
-        }
-    ],
-    "minimum-stability": "dev",
     "require": {
-        "php": "^8.1",
-        "friendsofphp/php-cs-fixer": "^3.8"
+        "php": "^8.3|^8.4|^8.5",
+        "friendsofphp/php-cs-fixer": "^3.94"
+    },
+    "require-dev": {
+        "shipmonk/composer-dependency-analyser": "^1.8"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

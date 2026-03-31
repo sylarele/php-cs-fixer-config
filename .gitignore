@@ -1,2 +1,7 @@
-/composer.lock
-/vendor
+# Directories
+/storage/
+/vendor/
+
+# Files
+composer.lock
+.idea

@@ -1,0 +1,31 @@
+name: setup php
+
+description: "Setup the php composer env"
+
+inputs:
+  php-version:
+    description: "PHP version to use in cache key"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Cache php composer
+      id: cache-composer
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      env:
+        cache-name-php: cache-composer
+      with:
+        # caching composer
+        path: vendor
+        key: ${{ runner.os }}-php-${{ inputs.php-version }}-build-${{ env.cache-name-php }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ inputs.php-version }}-build-${{ env.cache-name-php }}-
+          ${{ runner.os }}-php-${{ inputs.php-version }}-build-
+          ${{ runner.os }}-php-${{ inputs.php-version }}-
+          ${{ runner.os }}-
+
+    - name: Install php dependencies
+      if: steps.cache-composer.outputs.cache-hit != 'true'
+      shell: bash
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
