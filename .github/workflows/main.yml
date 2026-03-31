@@ -1,0 +1,62 @@
+name: CI/CD Workflow
+
+on: [push]
+
+env:
+  LATEST_PHP_VERSION: '8.5'
+
+jobs:
+  test:
+    name: Tests PHP ${{ matrix.php-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [ '8.3', '8.4', '8.5' ]
+    steps:
+      - name: Pull repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Validate commit message
+        if: matrix.php-version == env.LATEST_PHP_VERSION
+        run: ./.github/script/validate_commit.sh
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2.37.0
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          ini-values: opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
+
+      - name: Install dependencies with Composer
+        uses: ./.github/actions/setup-php-composer
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Dependencies tests
+        if: matrix.php-version == env.LATEST_PHP_VERSION
+        run: make dependencies
+
+      - name: Coding standards
+        run: make fix
+
+  deploy-production:
+    name: release
+    needs: test
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # v6.2.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}-
