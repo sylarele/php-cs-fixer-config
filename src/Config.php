@@ -102,8 +102,10 @@ class Config extends CsFixerConfig
             // placement => 'after'
             'php_unit_data_provider_method_order' => false,
 
-            // Override phpdoc_align @PhpCsFixer default
-            'phpdoc_align' => false,
+            'phpdoc_align' => [
+                'align' => 'left',
+                'spacing' => 1,
+            ],
 
             // Override phpdoc_separation @PhpCsFixer to complex
             'phpdoc_separation' => false,
