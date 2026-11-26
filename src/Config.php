@@ -107,6 +107,14 @@ class Config extends CsFixerConfig
                 'spacing' => 1,
             ],
 
+            // Override phpdoc_no_alias_tag @PhpCsFixer
+            // Keeps @link for URLs, @see stays for code references
+            'phpdoc_no_alias_tag' => [
+                'replacements' => [
+                    'type' => 'var',
+                ],
+            ],
+
             // Override phpdoc_separation @PhpCsFixer to complex
             'phpdoc_separation' => false,
 
